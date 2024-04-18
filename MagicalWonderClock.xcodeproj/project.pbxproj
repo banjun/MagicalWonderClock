@@ -10,7 +10,7 @@
 		EA8F50ED2BD13B1400866E14 /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F50EC2BD13B1400866E14 /* RealityKitContent */; };
 		EA8F50EF2BD13B1400866E14 /* MagicalWonderClockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA8F50EE2BD13B1400866E14 /* MagicalWonderClockApp.swift */; };
 		EA8F50F12BD13B1400866E14 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA8F50F02BD13B1400866E14 /* ContentView.swift */; };
-		EA8F50F32BD13B1400866E14 /* ImmersiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA8F50F22BD13B1400866E14 /* ImmersiveView.swift */; };
+		EA8F50F32BD13B1400866E14 /* VolumetricView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA8F50F22BD13B1400866E14 /* VolumetricView.swift */; };
 		EA8F50F52BD13B1500866E14 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA8F50F42BD13B1500866E14 /* Assets.xcassets */; };
 		EA8F50F82BD13B1500866E14 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA8F50F72BD13B1500866E14 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -20,7 +20,7 @@
 		EA8F50EB2BD13B1400866E14 /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 		EA8F50EE2BD13B1400866E14 /* MagicalWonderClockApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicalWonderClockApp.swift; sourceTree = "<group>"; };
 		EA8F50F02BD13B1400866E14 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		EA8F50F22BD13B1400866E14 /* ImmersiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmersiveView.swift; sourceTree = "<group>"; };
+		EA8F50F22BD13B1400866E14 /* VolumetricView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumetricView.swift; sourceTree = "<group>"; };
 		EA8F50F42BD13B1500866E14 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EA8F50F72BD13B1500866E14 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		EA8F50F92BD13B1500866E14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -60,7 +60,7 @@
 			children = (
 				EA8F50EE2BD13B1400866E14 /* MagicalWonderClockApp.swift */,
 				EA8F50F02BD13B1400866E14 /* ContentView.swift */,
-				EA8F50F22BD13B1400866E14 /* ImmersiveView.swift */,
+				EA8F50F22BD13B1400866E14 /* VolumetricView.swift */,
 				EA8F50F42BD13B1500866E14 /* Assets.xcassets */,
 				EA8F50F92BD13B1500866E14 /* Info.plist */,
 				EA8F50F62BD13B1500866E14 /* Preview Content */,
@@ -159,7 +159,7 @@
 			files = (
 				EA8F50F12BD13B1400866E14 /* ContentView.swift in Sources */,
 				EA8F50EF2BD13B1400866E14 /* MagicalWonderClockApp.swift in Sources */,
-				EA8F50F32BD13B1400866E14 /* ImmersiveView.swift in Sources */,
+				EA8F50F32BD13B1400866E14 /* VolumetricView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
