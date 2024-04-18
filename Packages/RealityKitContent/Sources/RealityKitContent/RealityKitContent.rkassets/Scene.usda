@@ -236,6 +236,13 @@ def Xform "Root"
                 }
             }
         }
+
+        def RealityKitComponent "GroundingShadow"
+        {
+            bool enableIBLShadow = 1
+            bool enableMeshShadow = 1
+            uniform token info:id = "RealityKit.GroundingShadow"
+        }
     }
 
     def Cube "Support" (
@@ -252,6 +259,13 @@ def Xform "Root"
         float3 xformOp:scale = (0.8, 0.6, 0.03)
         float3 xformOp:translate = (0.033557862, -0.039377794, -0.0031622942)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def RealityKitComponent "GroundingShadow"
+        {
+            bool enableIBLShadow = 1
+            bool enableMeshShadow = 1
+            uniform token info:id = "RealityKit.GroundingShadow"
+        }
     }
 
     def Material "Acryl"
