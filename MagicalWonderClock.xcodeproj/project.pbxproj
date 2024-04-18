@@ -13,6 +13,9 @@
 		EA8F50F32BD13B1400866E14 /* VolumetricView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA8F50F22BD13B1400866E14 /* VolumetricView.swift */; };
 		EA8F50F52BD13B1500866E14 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA8F50F42BD13B1500866E14 /* Assets.xcassets */; };
 		EA8F50F82BD13B1500866E14 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA8F50F72BD13B1500866E14 /* Preview Assets.xcassets */; };
+		EA8F51022BD1759700866E14 /* Ikemen in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F51012BD1759700866E14 /* Ikemen */; };
+		EA8F51052BD175B500866E14 /* SwiftSparql in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F51042BD175B500866E14 /* SwiftSparql */; };
+		EA8F51072BD1761300866E14 /* Imasparql.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA8F51062BD1761300866E14 /* Imasparql.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +27,7 @@
 		EA8F50F42BD13B1500866E14 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EA8F50F72BD13B1500866E14 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		EA8F50F92BD13B1500866E14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EA8F51062BD1761300866E14 /* Imasparql.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Imasparql.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +36,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				EA8F50ED2BD13B1400866E14 /* RealityKitContent in Frameworks */,
+				EA8F51052BD175B500866E14 /* SwiftSparql in Frameworks */,
+				EA8F51022BD1759700866E14 /* Ikemen in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,6 +67,7 @@
 				EA8F50EE2BD13B1400866E14 /* MagicalWonderClockApp.swift */,
 				EA8F50F02BD13B1400866E14 /* ContentView.swift */,
 				EA8F50F22BD13B1400866E14 /* VolumetricView.swift */,
+				EA8F51062BD1761300866E14 /* Imasparql.swift */,
 				EA8F50F42BD13B1500866E14 /* Assets.xcassets */,
 				EA8F50F92BD13B1500866E14 /* Info.plist */,
 				EA8F50F62BD13B1500866E14 /* Preview Content */,
@@ -102,6 +109,8 @@
 			name = MagicalWonderClock;
 			packageProductDependencies = (
 				EA8F50EC2BD13B1400866E14 /* RealityKitContent */,
+				EA8F51012BD1759700866E14 /* Ikemen */,
+				EA8F51042BD175B500866E14 /* SwiftSparql */,
 			);
 			productName = MagicalWonderClock;
 			productReference = EA8F50E72BD13B1400866E14 /* MagicalWonderClock.app */;
@@ -131,6 +140,10 @@
 				Base,
 			);
 			mainGroup = EA8F50DE2BD13B1400866E14;
+			packageReferences = (
+				EA8F51002BD1759700866E14 /* XCRemoteSwiftPackageReference "ikemen" */,
+				EA8F51032BD175B500866E14 /* XCRemoteSwiftPackageReference "SwiftSparql" */,
+			);
 			productRefGroup = EA8F50E82BD13B1400866E14 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -157,6 +170,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA8F51072BD1761300866E14 /* Imasparql.swift in Sources */,
 				EA8F50F12BD13B1400866E14 /* ContentView.swift in Sources */,
 				EA8F50EF2BD13B1400866E14 /* MagicalWonderClockApp.swift in Sources */,
 				EA8F50F32BD13B1400866E14 /* VolumetricView.swift in Sources */,
@@ -360,10 +374,39 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		EA8F51002BD1759700866E14 /* XCRemoteSwiftPackageReference "ikemen" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/banjun/ikemen";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.8.0;
+			};
+		};
+		EA8F51032BD175B500866E14 /* XCRemoteSwiftPackageReference "SwiftSparql" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/banjun/SwiftSparql";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.12.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		EA8F50EC2BD13B1400866E14 /* RealityKitContent */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RealityKitContent;
+		};
+		EA8F51012BD1759700866E14 /* Ikemen */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8F51002BD1759700866E14 /* XCRemoteSwiftPackageReference "ikemen" */;
+			productName = Ikemen;
+		};
+		EA8F51042BD175B500866E14 /* SwiftSparql */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8F51032BD175B500866E14 /* XCRemoteSwiftPackageReference "SwiftSparql" */;
+			productName = SwiftSparql;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

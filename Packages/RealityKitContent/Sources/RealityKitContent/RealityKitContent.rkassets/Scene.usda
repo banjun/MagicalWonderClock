@@ -7,7 +7,7 @@
 
 def Xform "Root"
 {
-    reorder nameChildren = ["Acryl", "Board_1", "Board", "Support"]
+    reorder nameChildren = ["Acryl", "Material", "Board", "Support"]
     rel material:binding = None (
         bindMaterialAs = "weakerThanDescendants"
     )
@@ -73,6 +73,15 @@ def Xform "Root"
 
             def Material "DefaultMaterial"
             {
+                asset inputs:image (
+                    customData = {
+                        dictionary realitykit = {
+                            float2 positionInSubgraph = (-572.83984, 170.875)
+                            float2 sizeInSubgraph = (115.5, 53)
+                            int stackingOrderInSubgraph = 37
+                        }
+                    }
+                )
                 prepend token outputs:mtlx:surface.connect = </Root/Board/Idol/DefaultMaterial/PreviewSurface.outputs:out>
                 token outputs:realitykit:vertex
                 token outputs:surface.connect = </Root/Board/Idol/DefaultMaterial/DefaultSurfaceShader.outputs:surface>
@@ -93,28 +102,31 @@ def Xform "Root"
                 def Shader "PreviewSurface"
                 {
                     uniform token info:id = "ND_UsdPreviewSurface_surfaceshader"
-                    color3f inputs:diffuseColor.connect = </Root/Board/Idol/DefaultMaterial/Image.outputs:out>
+                    float inputs:clearcoat
+                    float inputs:clearcoatRoughness
+                    color3f inputs:diffuseColor.connect = </Root/Board/Idol/DefaultMaterial/Image_1.outputs:out>
                     float inputs:metallic
+                    float3 inputs:normal
                     float inputs:opacity
                     float inputs:roughness
                     token outputs:out
                     float2 ui:nodegraph:node:pos = (-159.6875, 103.19141)
-                    float2 ui:nodegraph:node:size = (148.5, 199)
+                    float2 ui:nodegraph:node:size = (159.5, 307)
                     int ui:nodegraph:node:stackingOrder = 10
+                    string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["Advanced"]
                 }
 
-                def Shader "Image"
+                def Shader "Image_1"
                 {
                     uniform token info:id = "ND_image_color3"
-                    asset inputs:file = @tachibana_arisu_01.jpg@ (
-                        colorSpace = "srgb_texture"
-                    )
+                    prepend asset inputs:file.connect = </Root/Board/Idol/DefaultMaterial.inputs:image>
+                    string inputs:filtertype
+                    float2 inputs:texcoord
                     string inputs:vaddressmode
                     color3f outputs:out
-                    float2 ui:nodegraph:node:pos = (-431.41406, 108.55078)
+                    float2 ui:nodegraph:node:pos = (-397.60547, 235.61328)
                     float2 ui:nodegraph:node:size = (148.5, 199)
-                    int ui:nodegraph:node:stackingOrder = 7
-                    string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:texcoord"]
+                    int ui:nodegraph:node:stackingOrder = 29
                 }
             }
         }
@@ -185,8 +197,8 @@ def Xform "Root"
             }
         )
         {
-            reorder nameChildren = ["DefaultMaterial", "Idol", "Name", "Clock"]
-            rel material:binding = </Root/Board/Background/DefaultMaterial> (
+            reorder nameChildren = ["DefaultMaterial", "Material"]
+            rel material:binding = </Root/Board/Background/Material> (
                 bindMaterialAs = "weakerThanDescendants"
             )
             double size = 0.1
@@ -195,27 +207,32 @@ def Xform "Root"
             float3 xformOp:translate = (0, -1.6763808e-7, -0.030709418)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-            def Material "DefaultMaterial"
+            def Material "Material"
             {
-                token outputs:mtlx:surface.connect = </Root/Board/DefaultMaterial/PreviewSurface.outputs:out>
+                color3f inputs:color = (0, 0, 0) (
+                    customData = {
+                        dictionary realitykit = {
+                            float2 positionInSubgraph = (-140.76562, 46.203125)
+                            float2 sizeInSubgraph = (133, 53)
+                            int stackingOrderInSubgraph = 2
+                        }
+                    }
+                )
+                prepend token outputs:mtlx:surface.connect = </Root/Board/Background/Material/PreviewSurface.outputs:out>
                 token outputs:realitykit:vertex
-                token outputs:surface.connect = </Root/Board/Background/DefaultMaterial/DefaultSurfaceShader.outputs:surface>
-                float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (0, 109.5)
+                float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (299.25, 99.5)
                 float2 ui:nodegraph:realitykit:subgraphOutputs:size = (181.5, 99)
 
-                def Shader "DefaultSurfaceShader" (
-                    active = true
-                )
+                def Shader "PreviewSurface"
                 {
-                    uniform token info:id = "UsdPreviewSurface"
-                    float inputs:clearcoat = 0
-                    color3f inputs:diffuseColor = (0.34509805, 0.5058824, 0.75686276) (
-                        colorSpace = "srgb_texture"
-                    )
-                    float inputs:ior = 1.4
-                    float inputs:opacity = 1
-                    float inputs:roughness = 0.05
-                    token outputs:surface
+                    uniform token info:id = "ND_UsdPreviewSurface_surfaceshader"
+                    color3f inputs:diffuseColor.connect = </Root/Board/Background/Material.inputs:color>
+                    float inputs:metallic
+                    float inputs:roughness = 0.1
+                    token outputs:out
+                    float2 ui:nodegraph:node:pos = (74.25, 99.5)
+                    float2 ui:nodegraph:node:size = (148.5, 199)
+                    int ui:nodegraph:node:stackingOrder = 1
                 }
             }
         }
