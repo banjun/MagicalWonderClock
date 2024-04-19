@@ -107,24 +107,6 @@
         "D66134B1-3681-4A8E-AFE5-29F257229F3B",
         "Root",
         "Board",
-        "Idol"
-      ],
-      {
-        "isExpanded" : true,
-        "isLocked" : false
-      },
-      [
-        "D66134B1-3681-4A8E-AFE5-29F257229F3B",
-        "Root"
-      ],
-      {
-        "isExpanded" : true,
-        "isLocked" : false
-      },
-      [
-        "D66134B1-3681-4A8E-AFE5-29F257229F3B",
-        "Root",
-        "Board",
         "Idol",
         "DefaultMaterial"
       ],
@@ -134,18 +116,7 @@
       },
       [
         "D66134B1-3681-4A8E-AFE5-29F257229F3B",
-        "Root",
-        "Board"
-      ],
-      {
-        "isExpanded" : true,
-        "isLocked" : false
-      },
-      [
-        "D66134B1-3681-4A8E-AFE5-29F257229F3B",
-        "Root",
-        "Board",
-        "Background"
+        "Root"
       ],
       {
         "isExpanded" : true,
