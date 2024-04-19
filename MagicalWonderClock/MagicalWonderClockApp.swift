@@ -9,13 +9,9 @@ struct MagicalWonderClockApp: App {
 
         let minVolumetricLength: CGFloat = 300 // lower limit seems to be around 300pt
         WindowGroup(id: "Volumetric") {
-            ZStack {
-                // make the image front aligned within lower depth limit
-                Spacer().frame(depth: minVolumetricLength / 2)
-                VolumetricView()
-            }
+            VolumetricView(minVolumetricLength: minVolumetricLength)
         }
-        .defaultSize(width: 15, height: 10, depth: 7, in: .centimeters)
+        .defaultSize(width: minVolumetricLength, height: minVolumetricLength, depth: minVolumetricLength)
         .windowStyle(.volumetric)
         .windowResizability(.contentSize)
     }

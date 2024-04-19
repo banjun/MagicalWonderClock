@@ -16,6 +16,7 @@
 		EA8F51022BD1759700866E14 /* Ikemen in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F51012BD1759700866E14 /* Ikemen */; };
 		EA8F51052BD175B500866E14 /* SwiftSparql in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F51042BD175B500866E14 /* SwiftSparql */; };
 		EA8F51072BD1761300866E14 /* Imasparql.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA8F51062BD1761300866E14 /* Imasparql.swift */; };
+		EA8F51092BD2CE1900866E14 /* AcrylClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA8F51082BD2CE1900866E14 /* AcrylClock.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		EA8F50F72BD13B1500866E14 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		EA8F50F92BD13B1500866E14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EA8F51062BD1761300866E14 /* Imasparql.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Imasparql.swift; sourceTree = "<group>"; };
+		EA8F51082BD2CE1900866E14 /* AcrylClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcrylClock.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +69,7 @@
 				EA8F50EE2BD13B1400866E14 /* MagicalWonderClockApp.swift */,
 				EA8F50F02BD13B1400866E14 /* ContentView.swift */,
 				EA8F50F22BD13B1400866E14 /* VolumetricView.swift */,
+				EA8F51082BD2CE1900866E14 /* AcrylClock.swift */,
 				EA8F51062BD1761300866E14 /* Imasparql.swift */,
 				EA8F50F42BD13B1500866E14 /* Assets.xcassets */,
 				EA8F50F92BD13B1500866E14 /* Info.plist */,
@@ -172,6 +175,7 @@
 			files = (
 				EA8F51072BD1761300866E14 /* Imasparql.swift in Sources */,
 				EA8F50F12BD13B1400866E14 /* ContentView.swift in Sources */,
+				EA8F51092BD2CE1900866E14 /* AcrylClock.swift in Sources */,
 				EA8F50EF2BD13B1400866E14 /* MagicalWonderClockApp.swift in Sources */,
 				EA8F50F32BD13B1400866E14 /* VolumetricView.swift in Sources */,
 			);
@@ -239,7 +243,7 @@
 				SDKROOT = xros;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				XROS_DEPLOYMENT_TARGET = 1.2;
+				XROS_DEPLOYMENT_TARGET = 1.1;
 			};
 			name = Debug;
 		};
@@ -295,7 +299,7 @@
 				SDKROOT = xros;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
-				XROS_DEPLOYMENT_TARGET = 1.2;
+				XROS_DEPLOYMENT_TARGET = 1.1;
 			};
 			name = Release;
 		};
