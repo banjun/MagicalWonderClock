@@ -45,9 +45,7 @@ extension Idol {
                     .imasColor(is: Var("colorHex"))
                     .imasIdolListURL(is: Var("idolListURLString"))
                 }
-                .filter(.CONTAINS(v: Var("schemaName"), sub: name))
-                                       // FIXME: SwiftSparql.Serializer generates extra parens for LCASE
-                                       //                .filter(.CONTAINS(.init(.LCASE(Expression(Var("schemaName")))), Expression(stringLiteral: name.lowercased())))
+                .filter(.CONTAINS(.init(.LCASE(Expression(Var("schemaName")))), Expression(stringLiteral: name.lowercased())))
                 .triples)))
         .fetch()
     }
