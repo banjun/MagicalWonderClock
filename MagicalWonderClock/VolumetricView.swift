@@ -3,6 +3,7 @@ import RealityKit
 
 struct VolumetricView: View {
     let minVolumetricLength: CGFloat
+    let idol: Idol
     @Environment(\.physicalMetrics) private var physicalMetrics
     @State private var isWindowHandleVisible: Visibility = .visible
 
@@ -12,7 +13,7 @@ struct VolumetricView: View {
             RealityView {
                 $0.add(ModelEntity(mesh: .generateBox(size: physicalMetrics.convert(.init(minVolumetricLength), to: .meters) - 0.07), materials: [UnlitMaterial(color: .clear)]))
             }
-            AcrylClock()
+            AcrylClock(idol: idol)
                 .frame(width: physicalMetrics.convert(15, from: .centimeters),
                        height: physicalMetrics.convert(10, from: .centimeters))
                 .frame(depth: physicalMetrics.convert(7, from: .centimeters))
@@ -28,5 +29,5 @@ struct VolumetricView: View {
 }
 
 #Preview(immersionStyle: .mixed) {
-    VolumetricView(minVolumetricLength: 300)
+    VolumetricView(minVolumetricLength: 300, idol: .init(name: "橘ありす"))
 }

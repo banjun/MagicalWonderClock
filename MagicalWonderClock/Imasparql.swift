@@ -3,7 +3,7 @@ import SwiftSparql
 import LinkPresentation
 import UniformTypeIdentifiers
 
-struct Idol: Codable {
+struct Idol: Codable, Hashable {
     var name: String
     var idolListURLString: String?
     var colorHex: String?
@@ -41,10 +41,8 @@ extension Idol {
                 .rdfTypeIsImasIdol()
                 .rdfsLabel(is: Var("name"))
                 .schemaName(is: Var("schemaName"))
-                .optional { $0
-                    .imasColor(is: Var("colorHex"))
-                    .imasIdolListURL(is: Var("idolListURLString"))
-                }
+                .optional { $0.imasColor(is: Var("colorHex")) }
+                .optional { $0.imasIdolListURL(is: Var("idolListURLString")) }
                 .filter(.CONTAINS(.init(.LCASE(Expression(Var("schemaName")))), Expression(stringLiteral: name.lowercased())))
                 .triples)))
         .fetch()

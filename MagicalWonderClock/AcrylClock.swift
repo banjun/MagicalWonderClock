@@ -2,19 +2,24 @@ import SwiftUI
 import RealityKit
 import RealityKitContent
 import Ikemen
+import CryptoKit
+import UniformTypeIdentifiers
 
 struct AcrylClock: View {
+    let idol: Idol
+    
     var body: some View {
         RealityView { content in
             let scene = try! await Entity(named: "Scene", in: realityKitContentBundle)
             content.add(scene)
 
             do {
-                let idols = try await Idol.find(name: "Arisu Tachibana") // TODO: UI for search text and choose one
-                NSLog("%@", "idols found: \(idols)")
-                guard let idol = idols.first else { return }
                 guard let idolImageData = await idol.idolListImageURL() else { return }
-                let idolImageFile = FileManager.default.temporaryDirectory.appendingPathComponent("idol.png")
+                guard let library = NSSearchPathForDirectoriesInDomains(.libraryDirectory, .userDomainMask, true).first else { return }
+                let idolImageFolder = URL(filePath: library).appendingPathComponent("idolImages")
+                try FileManager.default.createDirectory(at: idolImageFolder, withIntermediateDirectories: true)
+                let idolImageFilenameBase: String = String(idol.name.data(using: .utf8)!.base64EncodedString().prefix(32))
+                let idolImageFile = idolImageFolder.appendingPathComponent(idolImageFilenameBase).appendingPathExtension(for: UTType.png)
                 try idolImageData.write(to: idolImageFile)
 
                 let idolEntity = scene.findEntity(named: "Idol")! as! ModelEntity
@@ -36,5 +41,5 @@ struct AcrylClock: View {
 }
 
 #Preview {
-    AcrylClock()
+    AcrylClock(idol: .init(name: "橘ありす"))
 }
