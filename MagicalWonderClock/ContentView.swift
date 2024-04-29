@@ -8,6 +8,8 @@ struct ContentView: View {
     @State private var idols: [Idol] = []
     @State private var selectedIdol: Idol?
     @AppStorage("lastSelectedIdol") private var lastSelectedIdol: Data?
+    @State private var previewRotation: Angle = .zero
+    @State private var previewRotationOnDragStart: Angle?
 
     var body: some View {
         HStack {
@@ -27,10 +29,33 @@ struct ContentView: View {
 
             if let selectedIdol {
                 VStack {
-                    AcrylClock(idol: selectedIdol).id(selectedIdol)
                     Spacer()
-                    Button("Place \(selectedIdol.name) Clock") {
+                    Text("Preview").font(.title).fixedSize().padding()
+                    AcrylClock(idol: selectedIdol, startSpinAnimationOnLoad: true, onTapGesture: {
+                        $0.toggleAnimations()
+                    })
+                    .id(selectedIdol)
+                    .frame(minWidth: 256, minHeight: 256)
+                    .rotation3DEffect(previewRotation, axis: .y)
+//                    .animation(.easeOut, value: previewRotation)
+                    .offset(z: -150) // NOTE: z length might be change. affects collision (drag)
+                    .offset(y: 70)
+                    .gesture(DragGesture().onChanged { value in
+                        if previewRotationOnDragStart == nil {
+                            previewRotationOnDragStart = previewRotation
+                        }
+                        previewRotation = .degrees((previewRotationOnDragStart!.degrees + value.translation.width / 5).truncatingRemainder(dividingBy: 360))
+                    }.onEnded { _ in
+                        previewRotationOnDragStart = nil
+                    })
+                    .background(Color.black.opacity(0.1), in: .rect(cornerRadius: 40))
+                    .padding()
+                    Spacer().layoutPriority(1)
+                    Button {
                         openWindow(id: "Volumetric", value: selectedIdol)
+                    } label: {
+                        Text("Place \(selectedIdol.name) Clock")
+                            .shadow(color: .black, radius: 1)
                     }
                     .tint(selectedIdol.color.map(Color.init(cgColor:)))
                     .padding()

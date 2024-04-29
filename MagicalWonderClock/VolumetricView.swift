@@ -5,6 +5,7 @@ struct VolumetricView: View {
     let minVolumetricLength: CGFloat
     let idol: Idol
     @Environment(\.physicalMetrics) private var physicalMetrics
+    @Environment(\.openWindow) private var openWindow
     @State private var isWindowHandleVisible: Visibility = .visible
 
     var body: some View {
@@ -17,12 +18,15 @@ struct VolumetricView: View {
                 .frame(width: physicalMetrics.convert(15, from: .centimeters),
                        height: physicalMetrics.convert(10, from: .centimeters))
                 .frame(depth: physicalMetrics.convert(7, from: .centimeters))
-                .onTapGesture { _ in
+                .simultaneousGesture(TapGesture().onEnded {
                     isWindowHandleVisible = switch isWindowHandleVisible {
                     case .automatic, .visible: .hidden
                     case .hidden: .visible
                     }
-                }
+                })
+            if isWindowHandleVisible == .visible {
+                Button { openWindow(id: "Main") } label: { Image(systemName: "gearshape.2") }
+            }
         }
         .persistentSystemOverlays(isWindowHandleVisible)
     }

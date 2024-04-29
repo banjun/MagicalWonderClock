@@ -3,7 +3,7 @@ import SwiftUI
 @main
 struct MagicalWonderClockApp: App {
     var body: some Scene {
-        WindowGroup {
+        WindowGroup(id: "Main") {
             ContentView()
         }
         .defaultSize(width: 600, height: 600)
