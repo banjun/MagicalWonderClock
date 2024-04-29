@@ -5,6 +5,8 @@ import UniformTypeIdentifiers
 
 struct Idol: Codable, Hashable {
     var name: String
+    var schemaNameJa: String?
+    var schemaNameEn: String?
     var idolListURLString: String?
     var colorHex: String?
 }
@@ -40,10 +42,18 @@ extension Idol {
             select: .init(where: .init(patterns: subject(Var("idol"))
                 .rdfTypeIsImasIdol()
                 .rdfsLabel(is: Var("name"))
-                .schemaName(is: Var("schemaName"))
+                .schemaName(is: Var("schemaName")) // just for filter
+                .filter(.CONTAINS(.init(.LCASE(Expression(Var("schemaName")))), Expression(stringLiteral: name.lowercased())))
+                .optional { $0
+                    .schemaName(is: Var("schemaNameJa")) // for capture jp
+                    .filter(.LANGMATCHES(.init(.LANG(.init(Var("schemaNameJa")))), "ja"))
+                }
+                .optional { $0
+                    .schemaName(is: Var("schemaNameEn")) // for capture en
+                    .filter(.LANGMATCHES(.init(.LANG(.init(Var("schemaNameEn")))), "en"))
+                }
                 .optional { $0.imasColor(is: Var("colorHex")) }
                 .optional { $0.imasIdolListURL(is: Var("idolListURLString")) }
-                .filter(.CONTAINS(.init(.LCASE(Expression(Var("schemaName")))), Expression(stringLiteral: name.lowercased())))
                 .triples)))
         .fetch()
     }

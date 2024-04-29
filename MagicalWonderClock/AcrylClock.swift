@@ -13,15 +13,17 @@ struct AcrylClock: View {
     @State private var timer: Timer? {
         didSet { oldValue?.invalidate() }
     }
+    @Binding private var isWindowHandleVisible: Visibility
 
-    init(idol: Idol, startSpinAnimationOnLoad: Bool = false, onTapGesture: ((Self) -> Void)? = nil) {
+    init(idol: Idol, startSpinAnimationOnLoad: Bool = false, isWindowHandleVisible: Binding<Visibility> = .constant(Visibility.automatic), onTapGesture: ((Self) -> Void)? = nil) {
         self.idol = idol
         self.startSpinAnimationOnLoad = startSpinAnimationOnLoad
+        self._isWindowHandleVisible = isWindowHandleVisible
         self.onTapGesture = onTapGesture
     }
 
     var body: some View {
-        RealityView { content in
+        RealityView { content, attachments in
             let scene = try! await Entity(named: "Scene", in: realityKitContentBundle)
             content.add(scene)
 
@@ -45,6 +47,14 @@ struct AcrylClock: View {
                         try! $0.setParameter(name: "color", value: .color(color))
                     }
                 }
+
+                let nameEntity = scene.findEntity(named: "Name")!
+                let nameAttachment = attachments.entity(for: "Name")!
+                nameAttachment.transform = scene.convert(transform: nameEntity.transform, from: nameEntity.parent!) // use scene coordinate for simplicity
+                nameAttachment.scale = .one // reset scales as it's manipulated as components are created in pure RCP
+//                nameAttachment.position.z += 0.01 // front shift by the thickness of name entity
+                scene.addChild(nameAttachment)
+                nameEntity.isEnabled = false
             } catch {
                 NSLog("%@", "error = \(String(describing: error))")
             }
@@ -52,12 +62,85 @@ struct AcrylClock: View {
             if startSpinAnimationOnLoad {
                 startSpinAnimation()
             }
-        } update: { content in
+        } update: { content, attachments in
             guard let scene = content.entities.first else { return }
             scene.transform.rotation = simd_quatf(.init(angle: yaw, axis: .y))
+        } attachments: {
+            Attachment(id: "Name") {
+                Name(name: (idol.schemaNameEn ?? idol.schemaNameJa ?? idol.name).uppercased())
+                // NOTE: possibly visionOS 1.2 bug: an Attachment accidentally take overs the parent window persistentSystemOverlays and it causes uncontrollable visibility of the window handle at the top view hierarchy. as a workaround, we propagate parent state into this layer.
+                    .persistentSystemOverlays(isWindowHandleVisible)
+            }
         }
         .onTapGesture {
             onTapGesture?(self)
+        }
+    }
+
+    struct Name: View {
+        let name: String
+        @Environment(\.physicalMetrics) private var physicalMetrics
+        var body: some View {
+            EmptyView()
+            let pointsPerMeter: Double = 1360.0 // NOTE: physicalMetrics sometimes is affected by something and returns 685.7549438476562 while the expected is 1360.0
+            // let width = physicalMetrics.convert(6, from: .centimeters)
+            // let height = physicalMetrics.convert(6, from: .millimeters)
+            // let stroke = physicalMetrics.convert(4, from: .millimeters)
+            // _ = {NSLog("%@", "physicalMetrics = \(physicalMetrics), width = \(width), height = \(height)"); return 0}()
+            let width = 0.06 * pointsPerMeter
+            let height = 0.006 * pointsPerMeter
+            let stroke: Double = 40 //0.06 * pointsPerMeter
+            OutlineStringView(
+                text: name,
+                font: {UIFont(descriptor: .preferredFontDescriptor(withTextStyle: .headline).withDesign(.serif)!, size: height * 2)},
+                textColor: .white,
+                strokeWidth: stroke,
+                strokeColor: UIColor(red: 0.75, green: 0.61, blue: 0.42, alpha: 1),
+                size: .init(width: width, height: height))
+            .frame(width: width, height: height)
+        }
+    }
+
+    struct OutlineStringView: UIViewRepresentable {
+        let text: String
+        let font: () -> UIFont // NOTE: simple UIFont cause error: reason: '-[__SwiftValue fontDescriptor]: unrecognized selector sent to instance
+        let textColor: UIColor
+        let strokeWidth: Double
+        let strokeColor: UIColor
+        let size: CGSize
+        func makeUIView(context: Context) -> UIView {
+            UIView() ※ { v in
+                v.addSubview(UILabel() ※ {
+                    $0.attributedText = .init(string: text, attributes: [
+                        .font: font(),
+                        // Supply a negative value for NSStrokeWidthAttributeName when you wish to draw a string that is both filled and stroked. https://developer.apple.com/library/archive/qa/qa1531/_index.html
+                        // However quality is not sufficient because connections of lines of a glyph also draws extra strokes...
+                            .strokeWidth: strokeWidth,
+                        .strokeColor: strokeColor,
+                    ])
+                })
+                v.addSubview(UILabel() ※ {
+                    $0.attributedText = .init(string: text, attributes: [
+                        .font: font(),
+                        .foregroundColor: textColor,
+                    ])
+                })
+                v.subviews.compactMap {$0 as? UILabel}.forEach {
+                    $0.textAlignment = .center
+                    $0.adjustsFontSizeToFitWidth = true
+                    $0.minimumScaleFactor = 0.01
+                    $0.translatesAutoresizingMaskIntoConstraints = false
+                    $0.leadingAnchor.constraint(equalTo: v.leadingAnchor).isActive = true
+                    $0.trailingAnchor.constraint(equalTo: v.trailingAnchor).isActive = true
+                    $0.topAnchor.constraint(equalTo: v.topAnchor).isActive = true
+                    $0.bottomAnchor.constraint(equalTo: v.bottomAnchor).isActive = true
+                }
+            }
+        }
+        func updateUIView(_ uiView: UIView, context: Context) {
+        }
+        func sizeThatFits(_ proposal: ProposedViewSize, uiView: UIView, context: Context) -> CGSize? {
+            size
         }
     }
 

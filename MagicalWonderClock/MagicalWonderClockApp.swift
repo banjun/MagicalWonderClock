@@ -10,11 +10,7 @@ struct MagicalWonderClockApp: App {
 
         let minVolumetricLength: CGFloat = 300 // lower limit seems to be around 300pt
         WindowGroup(id: "Volumetric", for: Idol.self) { $idol in
-            if let idol {
-                VolumetricView(minVolumetricLength: minVolumetricLength, idol: idol)
-            } else {
-                Text("nil")
-            }
+            VolumetricView(minVolumetricLength: minVolumetricLength, idol: idol!)
         }
         .defaultSize(width: minVolumetricLength, height: minVolumetricLength, depth: minVolumetricLength)
         .windowStyle(.volumetric)
