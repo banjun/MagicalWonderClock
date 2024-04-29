@@ -6,7 +6,7 @@ struct MagicalWonderClockApp: App {
         WindowGroup {
             ContentView()
         }
-        .defaultSize(width: 400, height: 600)
+        .defaultSize(width: 600, height: 600)
 
         let minVolumetricLength: CGFloat = 300 // lower limit seems to be around 300pt
         WindowGroup(id: "Volumetric", for: Idol.self) { $idol in

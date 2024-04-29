@@ -4,32 +4,47 @@ import RealityKitContent
 
 struct ContentView: View {
     @Environment(\.openWindow) var openWindow
-    @State private var searchText: String = ""
+    @AppStorage("searchText") private var searchText: String = ""
     @State private var idols: [Idol] = []
     @State private var selectedIdol: Idol?
-    @State private var navigationPath: [String] = []
+    @AppStorage("lastSelectedIdol") private var lastSelectedIdol: Data?
 
     var body: some View {
-        VStack {
-            Text("Magical Wonder Clock")
-                .fontDesign(.serif)
-                .font(.title)
-                .padding()
-            Form {
-                TextField("Idol Name", text: $searchText)
-                    .onSubmit(search)
-                IdolList(idols: idols, selectedIdol: $selectedIdol)
-            }
-            if let selectedIdol {
-                Button("Place \(selectedIdol.name) Clock") {
-                    openWindow(id: "Volumetric", value: selectedIdol)
+        HStack {
+            VStack {
+                Text("Magical Wonder Clock")
+                    .fontDesign(.serif)
+                    .font(.title)
+                    .padding()
+                Form {
+                    TextField("Idol Name", text: $searchText)
+                        .onSubmit(search)
+                    IdolList(idols: idols, selectedIdol: $selectedIdol)
                 }
-                .tint(selectedIdol.color.map(Color.init(cgColor:)))
-                .padding()
+                Spacer()
             }
-            Spacer()
+            .padding()
+
+            if let selectedIdol {
+                VStack {
+                    AcrylClock(idol: selectedIdol).id(selectedIdol)
+                    Spacer()
+                    Button("Place \(selectedIdol.name) Clock") {
+                        openWindow(id: "Volumetric", value: selectedIdol)
+                    }
+                    .tint(selectedIdol.color.map(Color.init(cgColor:)))
+                    .padding()
+                }
+            }
         }
-        .padding()
+        .onAppear {
+            if let lastSelectedIdol {
+                selectedIdol = try? JSONDecoder().decode(Idol.self, from: lastSelectedIdol)
+            }
+        }
+        .onChange(of: selectedIdol) { _, new in
+            lastSelectedIdol = try? JSONEncoder().encode(new)
+        }
     }
 
     private func search() {
