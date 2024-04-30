@@ -11,6 +11,10 @@ struct Idol: Codable, Hashable {
     var colorHex: String?
 }
 extension Idol {
+    /// sample expected data
+    static let 橘ありす: Idol = .init(name: "橘ありす", schemaNameJa: "橘ありす", schemaNameEn: "Arisu Tachibana", idolListURLString: "https://idollist.idolmaster-official.jp/detail/20104", colorHex: "5881C1")
+}
+extension Idol {
     var idolListURL: URL? { idolListURLString.flatMap { URL(string: $0) }}
     var color: CGColor? {
         guard let colorHex, colorHex.count == 6,

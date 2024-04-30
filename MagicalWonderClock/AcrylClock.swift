@@ -6,7 +6,12 @@ import CryptoKit
 import UniformTypeIdentifiers
 
 struct AcrylClock: View {
+    struct Input: Codable, Hashable {
+        var idol: Idol
+        var image: Data?
+    }
     let idol: Idol
+    @State private var image: Data?
     let startSpinAnimationOnLoad: Bool
     let onTapGesture: ((Self) -> Void)?
     @State private var yaw: Angle2D = .zero
@@ -15,8 +20,9 @@ struct AcrylClock: View {
     }
     @Binding private var isWindowHandleVisible: Visibility
 
-    init(idol: Idol, startSpinAnimationOnLoad: Bool = false, isWindowHandleVisible: Binding<Visibility> = .constant(Visibility.automatic), onTapGesture: ((Self) -> Void)? = nil) {
-        self.idol = idol
+    init(input: Input, startSpinAnimationOnLoad: Bool = false, isWindowHandleVisible: Binding<Visibility> = .constant(Visibility.automatic), onTapGesture: ((Self) -> Void)? = nil) {
+        self.idol = input.idol
+        self.image = input.image
         self.startSpinAnimationOnLoad = startSpinAnimationOnLoad
         self._isWindowHandleVisible = isWindowHandleVisible
         self.onTapGesture = onTapGesture
@@ -24,23 +30,32 @@ struct AcrylClock: View {
 
     var body: some View {
         RealityView { content, attachments in
-            let scene = try! await Entity(named: "Scene", in: realityKitContentBundle)
-            content.add(scene)
+            let scene: Entity
+            do {
+                scene = try await Entity(named: "Scene", in: realityKitContentBundle)
+                content.add(scene)
+            } catch {
+                // can cause cancellation error
+                NSLog("%@", "error occured on loading RCP file")
+                return
+            }
 
             do {
-                guard let idolImageData = await idol.idolListImageURL() else { return }
-                guard let library = NSSearchPathForDirectoriesInDomains(.libraryDirectory, .userDomainMask, true).first else { return }
-                let idolImageFolder = URL(filePath: library).appendingPathComponent("idolImages")
-                try FileManager.default.createDirectory(at: idolImageFolder, withIntermediateDirectories: true)
-                let idolImageFilenameBase: String = String(idol.name.data(using: .utf8)!.base64EncodedString().prefix(32))
-                let idolImageFile = idolImageFolder.appendingPathComponent(idolImageFilenameBase).appendingPathExtension(for: UTType.png)
-                try idolImageData.write(to: idolImageFile)
+                if let image {
+                    guard let library = NSSearchPathForDirectoriesInDomains(.libraryDirectory, .userDomainMask, true).first else { return }
+                    let idolImageFolder = URL(filePath: library).appendingPathComponent("idolImages")
+                    try FileManager.default.createDirectory(at: idolImageFolder, withIntermediateDirectories: true)
+                    let idolImageFilenameBase: String = String(idol.name.data(using: .utf8)!.base64EncodedString().prefix(32))
+                    let idolImageFile = idolImageFolder.appendingPathComponent(idolImageFilenameBase).appendingPathExtension(for: UTType.png)
+                    try image.write(to: idolImageFile)
 
-                let idolEntity = scene.findEntity(named: "Idol")! as! ModelEntity
-                let idolImageTexture = try! await TextureResource(contentsOf: idolImageFile)
-                idolEntity.model!.materials[0] = (idolEntity.model!.materials[0] as! ShaderGraphMaterial) ※ {
-                    try! $0.setParameter(name: "image", value: .textureResource(idolImageTexture))
+                    let idolEntity = scene.findEntity(named: "Idol")! as! ModelEntity
+                    let idolImageTexture = try! await TextureResource(contentsOf: idolImageFile)
+                    idolEntity.model!.materials[0] = (idolEntity.model!.materials[0] as! ShaderGraphMaterial) ※ {
+                        try! $0.setParameter(name: "image", value: .textureResource(idolImageTexture))
+                    }
                 }
+
                 if let color = idol.color {
                     let backgroundEntity = scene.findEntity(named: "Background")! as! ModelEntity
                     backgroundEntity.model!.materials[0] = (backgroundEntity.model!.materials[0] as! ShaderGraphMaterial) ※ {
@@ -74,6 +89,10 @@ struct AcrylClock: View {
         }
         .onTapGesture {
             onTapGesture?(self)
+        }
+        .task {
+            guard image == nil else { return }
+            image = await idol.idolListImageURL()
         }
     }
 
@@ -133,6 +152,6 @@ struct AcrylClock: View {
     }
 }
 
-#Preview {
-    AcrylClock(idol: .init(name: "橘ありす"))
+#Preview("AcrylClock", windowStyle: .volumetric) {
+    AcrylClock(input: .init(idol: .橘ありす, image: nil))
 }
