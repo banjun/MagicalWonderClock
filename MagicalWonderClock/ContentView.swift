@@ -1,5 +1,4 @@
 import SwiftUI
-import RealityKit
 import RealityKitContent
 
 private extension View {
@@ -14,6 +13,7 @@ struct ContentView: View {
     @State private var selectedIdol: Idol?
     @AppStorage("lastSelectedIdol") private var lastSelectedIdol: Data?
     @State private var image: UIImage?
+    @State private var sceneFile: SceneFile?
 
     var body: some View {
         VStack(alignment: .center) {
@@ -21,8 +21,8 @@ struct ContentView: View {
             HStack(alignment: .top, spacing: 20) {
                 SourcePane(idols: idols, searchText: $searchText, selectedIdol: $selectedIdol, search: search).stackWidth()
                 
-                if let selectedIdol {
-                    EditorPane(idol: selectedIdol, image: $image).stackWidth()
+                if let selectedIdol, let sceneFile {
+                    EditorPane(idol: selectedIdol, image: $image, idolImageRatio: sceneFile.idolImageRatio).stackWidth()
                 } else {
                     EmptyPane().stackWidth()
                 }
@@ -34,6 +34,9 @@ struct ContentView: View {
                 }
             }
             .padding()
+        }
+        .task {
+            sceneFile = try! await .init()
         }
         .onAppear {
             if let lastSelectedIdol {
@@ -118,14 +121,14 @@ struct ContentView: View {
         @State private var idolListImage: UIImage?
         @State private var offsetX: CGFloat = 0
         @State private var dragStartOffsetX: CGFloat?
-        let ratio = 0.6 / 0.755
+        var idolImageRatio: Double
         let imageViewMaxHeight: CGFloat = 150
         var body: some View {
             VStack {
                 PaneTitle(text: "Editor")
                 if let idolListImage {
                     Color.clear
-                        .aspectRatio(ratio, contentMode: .fit)
+                        .aspectRatio(idolImageRatio, contentMode: .fit)
                         .overlay {
                             Image(uiImage: idolListImage).resizable().aspectRatio(contentMode: .fill)
                                 .offset(x: offsetX)
@@ -136,7 +139,7 @@ struct ContentView: View {
                             if dragStartOffsetX == nil {
                                 dragStartOffsetX = offsetX
                             }
-                            let maxTranslation = (idolListImage.size.width - idolListImage.size.height * ratio) * (imageViewMaxHeight / idolListImage.size.height) / 2
+                            let maxTranslation = (idolListImage.size.width - idolListImage.size.height * idolImageRatio) * (imageViewMaxHeight / idolListImage.size.height) / 2
                             offsetX = max(-maxTranslation, min(maxTranslation, dragStartOffsetX! + $0.translation.width))
                         }.onEnded { _ in
                             dragStartOffsetX = nil
@@ -160,10 +163,10 @@ struct ContentView: View {
 
         @MainActor private func clipImage() {
             guard let idolListImage else { return }
-            let canvasSize = CGSize(width: 2048, height: 2048)
+            let canvasSize = CGSize(width: 512, height: 512)
             image = ImageRenderer(
                 content: Color.clear
-                    .aspectRatio(ratio, contentMode: .fit)
+                    .aspectRatio(idolImageRatio, contentMode: .fit)
                     .overlay {
                         Image(uiImage: idolListImage).resizable().aspectRatio(contentMode: .fill)
                             .offset(x: offsetX * canvasSize.height / imageViewMaxHeight)
@@ -171,7 +174,7 @@ struct ContentView: View {
                     .clipShape(.rect)
                     .frame(width: canvasSize.width, height: canvasSize.height)
                     // scale to square texture
-                    .scaleEffect(CGSize(width: 1 / ratio, height: 1))
+                    .scaleEffect(CGSize(width: 1 / idolImageRatio, height: 1))
             ).uiImage
         }
     }
@@ -248,8 +251,10 @@ import Ikemen
 #Preview("Editor", windowStyle: .automatic) {
     struct P: View {
         @State private var image: UIImage?
+        @State private var idolImageRatio: Double?
         var body: some View {
-            ContentView.EditorPane(idol: .橘ありす, image: $image)
+            ContentView.EditorPane(idol: .橘ありす, image: $image, idolImageRatio: idolImageRatio ?? 1)
+                .task { idolImageRatio = try! await SceneFile().idolImageRatio }
         }
     }
     return P()

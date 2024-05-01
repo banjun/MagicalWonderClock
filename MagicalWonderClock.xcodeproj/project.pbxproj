@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EA32EB5D2BE28C2C000584F2 /* DownloadFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA32EB5C2BE28C2C000584F2 /* DownloadFolder.swift */; };
 		EA4AB7DC2BE00A4D00BC5148 /* OutlineStringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA4AB7DB2BE00A4D00BC5148 /* OutlineStringView.swift */; };
 		EA8F50ED2BD13B1400866E14 /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = EA8F50EC2BD13B1400866E14 /* RealityKitContent */; };
 		EA8F50EF2BD13B1400866E14 /* MagicalWonderClockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA8F50EE2BD13B1400866E14 /* MagicalWonderClockApp.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		EA32EB5C2BE28C2C000584F2 /* DownloadFolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadFolder.swift; sourceTree = "<group>"; };
 		EA4AB7DB2BE00A4D00BC5148 /* OutlineStringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlineStringView.swift; sourceTree = "<group>"; };
 		EA8F50E72BD13B1400866E14 /* MagicalWonderClock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MagicalWonderClock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA8F50EB2BD13B1400866E14 /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
@@ -73,6 +75,7 @@
 				EA8F50F22BD13B1400866E14 /* VolumetricView.swift */,
 				EA8F51082BD2CE1900866E14 /* AcrylClock.swift */,
 				EA8F51062BD1761300866E14 /* Imasparql.swift */,
+				EA32EB5C2BE28C2C000584F2 /* DownloadFolder.swift */,
 				EA4AB7DB2BE00A4D00BC5148 /* OutlineStringView.swift */,
 				EA8F50F42BD13B1500866E14 /* Assets.xcassets */,
 				EA8F50F92BD13B1500866E14 /* Info.plist */,
@@ -178,6 +181,7 @@
 			files = (
 				EA4AB7DC2BE00A4D00BC5148 /* OutlineStringView.swift in Sources */,
 				EA8F51072BD1761300866E14 /* Imasparql.swift in Sources */,
+				EA32EB5D2BE28C2C000584F2 /* DownloadFolder.swift in Sources */,
 				EA8F50F12BD13B1400866E14 /* ContentView.swift in Sources */,
 				EA8F51092BD2CE1900866E14 /* AcrylClock.swift in Sources */,
 				EA8F50EF2BD13B1400866E14 /* MagicalWonderClockApp.swift in Sources */,

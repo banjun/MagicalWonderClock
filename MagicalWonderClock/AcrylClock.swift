@@ -1,9 +1,6 @@
 import SwiftUI
 import RealityKit
 import RealityKitContent
-import Ikemen
-import CryptoKit
-import UniformTypeIdentifiers
 
 struct AcrylClock: View {
     struct Input: Codable, Hashable {
@@ -18,6 +15,7 @@ struct AcrylClock: View {
     @State private var timer: Timer? {
         didSet { oldValue?.invalidate() }
     }
+    @State private var nameEntitySize: CGSize = .zero
     @Binding private var isWindowHandleVisible: Visibility
 
     init(input: Input, startSpinAnimationOnLoad: Bool = false, isWindowHandleVisible: Binding<Visibility> = .constant(Visibility.automatic), onTapGesture: ((Self) -> Void)? = nil) {
@@ -30,49 +28,30 @@ struct AcrylClock: View {
 
     var body: some View {
         RealityView { content, attachments in
-            let scene: Entity
+            let sceneFile: SceneFile
             do {
-                scene = try await Entity(named: "Scene", in: realityKitContentBundle)
-                content.add(scene)
+                sceneFile = try await SceneFile()
+                content.add(sceneFile.scene)
             } catch {
-                // can cause cancellation error
-                NSLog("%@", "error occured on loading RCP file")
+                NSLog("%@", "error = \(String(describing: error))")
                 return
             }
 
-            do {
-                if let image {
-                    guard let library = NSSearchPathForDirectoriesInDomains(.libraryDirectory, .userDomainMask, true).first else { return }
-                    let idolImageFolder = URL(filePath: library).appendingPathComponent("idolImages")
-                    try FileManager.default.createDirectory(at: idolImageFolder, withIntermediateDirectories: true)
-                    let idolImageFilenameBase: String = String(idol.name.data(using: .utf8)!.base64EncodedString().prefix(32))
-                    let idolImageFile = idolImageFolder.appendingPathComponent(idolImageFilenameBase).appendingPathExtension(for: UTType.png)
-                    try image.write(to: idolImageFile)
-
-                    let idolEntity = scene.findEntity(named: "Idol")! as! ModelEntity
-                    let idolImageTexture = try! await TextureResource(contentsOf: idolImageFile)
-                    idolEntity.model!.materials[0] = (idolEntity.model!.materials[0] as! ShaderGraphMaterial) ※ {
-                        try! $0.setParameter(name: "image", value: .textureResource(idolImageTexture))
-                    }
+            if let image {
+                do {
+                    let idolImageFile = try await DownloadFolder.shared.saveIdolImage(idol: idol, image: image)
+                    sceneFile.setIdolImage(try await TextureResource(contentsOf: idolImageFile))
+                } catch {
+                    NSLog("%@", "error = \(String(describing: error))")
                 }
-
-                if let color = idol.color {
-                    let backgroundEntity = scene.findEntity(named: "Background")! as! ModelEntity
-                    backgroundEntity.model!.materials[0] = (backgroundEntity.model!.materials[0] as! ShaderGraphMaterial) ※ {
-                        try! $0.setParameter(name: "color", value: .color(color))
-                    }
-                }
-
-                let nameEntity = scene.findEntity(named: "Name")!
-                let nameAttachment = attachments.entity(for: "Name")!
-                nameAttachment.transform = scene.convert(transform: nameEntity.transform, from: nameEntity.parent!) // use scene coordinate for simplicity
-                nameAttachment.scale = .one // reset scales as it's manipulated as components are created in pure RCP
-//                nameAttachment.position.z += 0.01 // front shift by the thickness of name entity
-                scene.addChild(nameAttachment)
-                nameEntity.isEnabled = false
-            } catch {
-                NSLog("%@", "error = \(String(describing: error))")
             }
+
+            if let color = idol.color {
+                sceneFile.setBackgroundColor(color)
+            }
+
+            nameEntitySize = sceneFile.nameEntitySize
+            sceneFile.replaceNameEntity(with: attachments.entity(for: "Name")!)
 
             if startSpinAnimationOnLoad {
                 startSpinAnimation()
@@ -82,7 +61,7 @@ struct AcrylClock: View {
             scene.transform.rotation = simd_quatf(.init(angle: yaw, axis: .y))
         } attachments: {
             Attachment(id: "Name") {
-                Name(name: (idol.schemaNameEn ?? idol.schemaNameJa ?? idol.name).uppercased())
+                Name(name: (idol.schemaNameEn ?? idol.schemaNameJa ?? idol.name).uppercased(), nameEntitySize: nameEntitySize)
                 // NOTE: possibly visionOS 1.2 bug: an Attachment accidentally take overs the parent window persistentSystemOverlays and it causes uncontrollable visibility of the window handle at the top view hierarchy. as a workaround, we propagate parent state into this layer.
                     .persistentSystemOverlays(isWindowHandleVisible)
             }
@@ -98,6 +77,7 @@ struct AcrylClock: View {
 
     struct Name: View {
         let name: String
+        var nameEntitySize: CGSize
         @Environment(\.physicalMetrics) private var physicalMetrics
         var body: some View {
             EmptyView()
@@ -106,8 +86,8 @@ struct AcrylClock: View {
             // let height = physicalMetrics.convert(6, from: .millimeters)
             // let stroke = physicalMetrics.convert(4, from: .millimeters)
             // _ = {NSLog("%@", "physicalMetrics = \(physicalMetrics), width = \(width), height = \(height)"); return 0}()
-            let width = 0.06 * pointsPerMeter
-            let height = 0.006 * pointsPerMeter
+            let width = nameEntitySize.width * pointsPerMeter
+            let height = nameEntitySize.height * pointsPerMeter
             let stroke: Double = 40 //0.06 * pointsPerMeter
             OutlineStringView(
                 text: name,
