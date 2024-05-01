@@ -106,6 +106,7 @@ struct ContentView: View {
                                 .frame(width: 32, height: 32)
                             Spacer().frame(width: 16)
                             Text(idol.name)
+                                .typesettingLanguage(.explicit(.init(identifier: "ja")))
                         }
                         .tag(Idol?.some(idol))
                     }
@@ -218,7 +219,8 @@ struct ContentView: View {
                 Button {
                     openWindow(id: "Volumetric", value: AcrylClock.Input(idol: idol, image: image))
                 } label: {
-                    Text("Place \(idol.name) Clock")
+                    Text(verbatim: "Place \(idol.name) Clock")
+                        .typesettingLanguage(.explicit(.init(identifier: "ja")))
                         .shadow(color: .black, radius: 1)
                 }
                 .tint(idol.color.map(Color.init(cgColor:)))
