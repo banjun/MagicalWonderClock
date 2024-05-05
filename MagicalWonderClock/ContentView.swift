@@ -196,7 +196,7 @@ struct ContentView: View {
             VStack {
                 let input = AcrylClock.Input(idol: idol, image: image)
                 PaneTitle(text: "Preview")
-                AcrylClock(input: input, startSpinAnimationOnLoad: true, onTapGesture: {
+                AcrylClock(input: input, startSpinAnimationOnLoad: .infinite, onTapGesture: {
                     $0.toggleAnimations()
                 })
                 .id(input)

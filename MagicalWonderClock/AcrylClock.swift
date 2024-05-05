@@ -9,7 +9,8 @@ struct AcrylClock: View {
     }
     let idol: Idol
     @State private var image: Data?
-    let startSpinAnimationOnLoad: Bool
+    let startSpinAnimationOnLoad: SpinAnimation
+    enum SpinAnimation { case never, once, infinite }
     let onTapGesture: ((Self) -> Void)?
     @State private var yaw: Angle2D = .zero
     @State private var timer: Timer? {
@@ -18,7 +19,7 @@ struct AcrylClock: View {
     @State private var nameEntitySize: CGSize = .zero
     @Binding private var isWindowHandleVisible: Visibility
 
-    init(input: Input, startSpinAnimationOnLoad: Bool = false, isWindowHandleVisible: Binding<Visibility> = .constant(Visibility.automatic), onTapGesture: ((Self) -> Void)? = nil) {
+    init(input: Input, startSpinAnimationOnLoad: SpinAnimation = .never, isWindowHandleVisible: Binding<Visibility> = .constant(Visibility.automatic), onTapGesture: ((Self) -> Void)? = nil) {
         self.idol = input.idol
         self.image = input.image
         self.startSpinAnimationOnLoad = startSpinAnimationOnLoad
@@ -53,8 +54,10 @@ struct AcrylClock: View {
             nameEntitySize = sceneFile.nameEntitySize
             sceneFile.replaceNameEntity(with: attachments.entity(for: "Name")!)
 
-            if startSpinAnimationOnLoad {
-                startSpinAnimation()
+            switch startSpinAnimationOnLoad {
+            case .never: break
+            case .once: startSpinAnimation(infinite: false, duration: 1)
+            case .infinite: startSpinAnimation(infinite: true)
             }
         } update: { content, attachments in
             guard let scene = content.entities.first else { return }
@@ -100,15 +103,15 @@ struct AcrylClock: View {
         }
     }
 
-    func startSpinAnimation() {
+    func startSpinAnimation(infinite: Bool, duration: Double = 5) {
         var start = Date().timeIntervalSince1970
-        let duration: Double = 5
         let from: Double = yaw.radians.truncatingRemainder(dividingBy: 2 * .pi)
         let to: Double = from + 2 * .pi
         timer = Timer.scheduledTimer(withTimeInterval: 1 / 60, repeats: true) { _ in
             let now = Date().timeIntervalSince1970
             let elapsed = now - start
             guard elapsed < duration else {
+                if !infinite { timer = nil }
                 start = now
                 return
             }
@@ -127,7 +130,7 @@ struct AcrylClock: View {
         if timer != nil {
             stopAnimations()
         } else {
-            startSpinAnimation()
+            startSpinAnimation(infinite: true)
         }
     }
 }
