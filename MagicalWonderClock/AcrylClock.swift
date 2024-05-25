@@ -69,7 +69,7 @@ struct AcrylClock: View {
             scene.transform.rotation = simd_quatf(.init(angle: yaw, axis: .y))
 
             guard let sceneFile else { return }
-            sceneFile.secondHandEntity.transform.rotation = .init(angle: .init(secondAngle.radians), axis: .init(0, 0, 1))
+            sceneFile.secondHandEntity.transform.rotation = .init(.init(angle: secondAngle, axis: .z))
         } attachments: {
             Attachment(id: "Name") {
                 Name(name: (idol.schemaNameEn ?? idol.schemaNameJa ?? idol.name).uppercased(), nameEntitySize: nameEntitySize)

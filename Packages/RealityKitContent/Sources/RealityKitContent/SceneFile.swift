@@ -33,32 +33,40 @@ public final class SceneFile {
         let nameEntityExtents = await nameEntity.visualBounds(relativeTo: nil).extents
         nameEntitySize = CGSize(width: CGFloat(nameEntityExtents.x), height: CGFloat(nameEntityExtents.y))
 
-        var handMaterial = await Task { @MainActor in PhysicallyBasedMaterial() }.value
-        handMaterial.baseColor = .init(tint: .black)
-        handMaterial.roughness = 0.1
+        secondHandEntity = if let e = (await scene.findEntity(named: "SecondHand") as? ModelEntity) { e } else {
+            await Task { @MainActor in
+                var handMaterial = PhysicallyBasedMaterial()
+                handMaterial.baseColor = .init(tint: .black)
+                handMaterial.roughness = 0.1
 
-        var secondMeshDescriptor = MeshDescriptor(name: "Second")
-        func x(y: Float) -> Float {
-            let a: Float = 5
-            let t: Float = -0.7
-            return 0.1 * cos(a * (y - t)) * exp(-a * (y - t))
+                var secondMeshDescriptor = MeshDescriptor(name: "Second")
+                func x(y: Float) -> Float {
+                    let a: Float = 5
+                    let t: Float = -0.7
+                    return 0.1 * cos(a * (y - t)) * exp(-a * (y - t))
+                }
+                let points = [Float](stride(from: -1, to: 1, by: 0.02))
+                let vertices: [SIMD3<Float>] = (points.map {
+                    SIMD3<Float>(max(0.01, x(y: $0)), $0, 0)
+                } + points.reversed().map {
+                    SIMD3<Float>(-max(0.01, x(y: $0)), $0, 0)
+                })
+                    .map { $0 * 0.025 }
+                    .map { SIMD3<Float>($0.x, $0.y + 0.01, $0.z) }
+                secondMeshDescriptor.positions = .init(vertices)
+                secondMeshDescriptor.primitives = .polygons([UInt8(vertices.count)], Array(0..<(UInt32(vertices.count))))
+
+                let e = try! await ModelEntity(mesh: .init(from: [secondMeshDescriptor]), materials: [handMaterial])
+                e.name = "SecondHand"
+                e.position.z = 0.01
+                return e
+            }.value
         }
-        let points = [Float](stride(from: -1, to: 1, by: 0.02))
-        let vertices: [SIMD3<Float>] = (points.map {
-            SIMD3<Float>(max(0.01, x(y: $0)), $0, 0)
-        } + points.reversed().map {
-            SIMD3<Float>(-max(0.01, x(y: $0)), $0, 0)
-        })
-            .map { $0 * 0.025 }
-            .map { SIMD3<Float>($0.x, $0.y + 0.01, $0.z) }
-        secondMeshDescriptor.positions = .init(vertices)
-        secondMeshDescriptor.primitives = .polygons([UInt8(vertices.count)], Array(0..<(UInt32(vertices.count))))
-        secondHandEntity = try! await ModelEntity(mesh: .init(from: [secondMeshDescriptor]), materials: [handMaterial])
 
         Task { @MainActor in
-            secondHandEntity.position.z = 0.01
-            
+            guard scene.findEntity(named: "ClockAnchor") == nil else { return }
             let clockAnchorEntity = Entity()
+            clockAnchorEntity.name = "ClockAnchor"
             clockAnchorEntity.transform.rotation = scene.convert(transform: clockEntity.transform, from: clockEntity).rotation
             clockAnchorEntity.position = clockEntity.position(relativeTo: scene)
             clockAnchorEntity.addChild(secondHandEntity)
