@@ -45,7 +45,7 @@ public final class SceneFile {
                     let t: Float = -0.85
                     return 0.05 * cos(a * (y - t)) * exp(-a * (y - t))
                 }
-                let points = [Float](stride(from: -1, through: 1, by: 0.02))
+                let points = [Float](stride(from: -1, through: 1, by: 0.02)) // should be less than 256 / 2, because a polygon can contain only 256 vertices
                 let vertices1: [SIMD3<Float>] = points.map { SIMD3<Float>(max(0.01, x(y: $0)), $0, 0) } // right side, bottom to top
                 let vertices2: [SIMD3<Float>] = vertices1.reversed().map { SIMD3<Float>(-$0.x, $0.y, $0.z) } // left side, top to bottom
                 let vertices3: [SIMD3<Float>] = vertices2.reversed().map { SIMD3<Float>($0.x, $0.y, $0.z - 0.0005 / 0.025) } // left in back side, bottom to top
@@ -55,10 +55,10 @@ public final class SceneFile {
                     .map { SIMD3<Float>($0.x, $0.y + 0.01, $0.z) } // traslate
                 secondMeshDescriptor.positions = .init(vertices)
                 let polygonVerticesCounts: [UInt8] = [
-                    UInt8(vertices1.count + vertices2.count),
-                    UInt8(vertices3.count + vertices4.count),
-                    UInt8(vertices4.count + vertices1.count),
-                    UInt8(vertices2.count + vertices3.count),
+                    UInt8(vertices1.count + vertices2.count), // front side
+                    UInt8(vertices3.count + vertices4.count), // back side
+                    UInt8(vertices4.count + vertices1.count), // right side
+                    UInt8(vertices2.count + vertices3.count), // left side
                 ]
                 let verticesIndices1: [UInt32] = (0..<vertices1.count).map {UInt32($0)}
                 let verticesIndices2: [UInt32] = (0..<vertices2.count).map {UInt32(vertices1.count + $0)}
