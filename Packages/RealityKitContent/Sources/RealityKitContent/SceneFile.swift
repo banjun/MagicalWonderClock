@@ -1,5 +1,6 @@
 import Foundation
 import RealityKit
+import RealityFoundation
 import CoreGraphics
 import SwiftUI
 
@@ -11,6 +12,8 @@ public final class SceneFile {
     public let nameEntity: ModelEntity
     public let nameEntitySize: CGSize
     public let backgroundEntity: ModelEntity
+    public let clockEntity: ModelEntity
+    public let secondHandEntity: ModelEntity
 
     static private var scene: Entity?
 
@@ -24,10 +27,43 @@ public final class SceneFile {
         idolImageEntity = await scene.findEntity(named: "Idol")! as! ModelEntity
         nameEntity = await scene.findEntity(named: "Name")! as! ModelEntity
         backgroundEntity = await scene.findEntity(named: "Background")! as! ModelEntity
+        clockEntity = await scene.findEntity(named: "Clock")! as! ModelEntity
         let idolImageEntityExtents = await idolImageEntity.visualBounds(relativeTo: nil).extents
         idolImageRatio = Double(idolImageEntityExtents.x / idolImageEntityExtents.y)
         let nameEntityExtents = await nameEntity.visualBounds(relativeTo: nil).extents
         nameEntitySize = CGSize(width: CGFloat(nameEntityExtents.x), height: CGFloat(nameEntityExtents.y))
+
+        var handMaterial = await Task { @MainActor in PhysicallyBasedMaterial() }.value
+        handMaterial.baseColor = .init(tint: .black)
+        handMaterial.roughness = 0.1
+
+        var secondMeshDescriptor = MeshDescriptor(name: "Second")
+        func x(y: Float) -> Float {
+            let a: Float = 5
+            let t: Float = -0.7
+            return 0.1 * cos(a * (y - t)) * exp(-a * (y - t))
+        }
+        let points = [Float](stride(from: -1, to: 1, by: 0.02))
+        let vertices: [SIMD3<Float>] = (points.map {
+            SIMD3<Float>(max(0.01, x(y: $0)), $0, 0)
+        } + points.reversed().map {
+            SIMD3<Float>(-max(0.01, x(y: $0)), $0, 0)
+        })
+            .map { $0 * 0.025 }
+            .map { SIMD3<Float>($0.x, $0.y + 0.01, $0.z) }
+        secondMeshDescriptor.positions = .init(vertices)
+        secondMeshDescriptor.primitives = .polygons([UInt8(vertices.count)], Array(0..<(UInt32(vertices.count))))
+        secondHandEntity = try! await ModelEntity(mesh: .init(from: [secondMeshDescriptor]), materials: [handMaterial])
+
+        Task { @MainActor in
+            secondHandEntity.position.z = 0.01
+            
+            let clockAnchorEntity = Entity()
+            clockAnchorEntity.transform.rotation = scene.convert(transform: clockEntity.transform, from: clockEntity).rotation
+            clockAnchorEntity.position = clockEntity.position(relativeTo: scene)
+            clockAnchorEntity.addChild(secondHandEntity)
+            scene.addChild(clockAnchorEntity)
+        }
     }
 
     // custom shaders must be set in RCP file

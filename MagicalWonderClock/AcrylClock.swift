@@ -19,6 +19,10 @@ struct AcrylClock: View {
     @State private var nameEntitySize: CGSize = .zero
     @Binding private var isWindowHandleVisible: Visibility
 
+    @State private var sceneFile: SceneFile?
+    private let tickTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var secondAngle = Angle2D.degrees(0)
+
     init(input: Input, startSpinAnimationOnLoad: SpinAnimation = .never, isWindowHandleVisible: Binding<Visibility> = .constant(Visibility.automatic), onTapGesture: ((Self) -> Void)? = nil) {
         self.idol = input.idol
         self.image = input.image
@@ -33,6 +37,7 @@ struct AcrylClock: View {
             do {
                 sceneFile = try await SceneFile()
                 content.add(sceneFile.scene)
+                self.sceneFile = sceneFile
             } catch {
                 NSLog("%@", "error = \(String(describing: error))")
                 return
@@ -62,6 +67,9 @@ struct AcrylClock: View {
         } update: { content, attachments in
             guard let scene = content.entities.first else { return }
             scene.transform.rotation = simd_quatf(.init(angle: yaw, axis: .y))
+
+            guard let sceneFile else { return }
+            sceneFile.secondHandEntity.transform.rotation = .init(angle: .init(secondAngle.radians), axis: .init(0, 0, 1))
         } attachments: {
             Attachment(id: "Name") {
                 Name(name: (idol.schemaNameEn ?? idol.schemaNameJa ?? idol.name).uppercased(), nameEntitySize: nameEntitySize)
@@ -75,6 +83,10 @@ struct AcrylClock: View {
         .task {
             guard image == nil else { return }
             image = await idol.idolListImageURL()
+        }
+        .onReceive(tickTimer) { _ in
+            let now = Date()
+            secondAngle = .degrees(Double(-6 * Calendar.autoupdatingCurrent.component(.second, from: now)))
         }
     }
 
