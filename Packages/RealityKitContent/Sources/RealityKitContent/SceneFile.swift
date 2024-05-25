@@ -41,20 +41,39 @@ public final class SceneFile {
 
                 var secondMeshDescriptor = MeshDescriptor(name: "Second")
                 func x(y: Float) -> Float {
-                    let a: Float = 5
-                    let t: Float = -0.7
-                    return 0.1 * cos(a * (y - t)) * exp(-a * (y - t))
+                    let a: Float = 10
+                    let t: Float = -0.85
+                    return 0.05 * cos(a * (y - t)) * exp(-a * (y - t))
                 }
-                let points = [Float](stride(from: -1, to: 1, by: 0.02))
-                let vertices: [SIMD3<Float>] = (points.map {
-                    SIMD3<Float>(max(0.01, x(y: $0)), $0, 0)
-                } + points.reversed().map {
-                    SIMD3<Float>(-max(0.01, x(y: $0)), $0, 0)
-                })
-                    .map { $0 * 0.025 }
-                    .map { SIMD3<Float>($0.x, $0.y + 0.01, $0.z) }
+                let points = [Float](stride(from: -1, through: 1, by: 0.02))
+                let vertices1: [SIMD3<Float>] = points.map { SIMD3<Float>(max(0.01, x(y: $0)), $0, 0) } // right side, bottom to top
+                let vertices2: [SIMD3<Float>] = vertices1.reversed().map { SIMD3<Float>(-$0.x, $0.y, $0.z) } // left side, top to bottom
+                let vertices3: [SIMD3<Float>] = vertices2.reversed().map { SIMD3<Float>($0.x, $0.y, $0.z - 0.0005 / 0.025) } // left in back side, bottom to top
+                let vertices4: [SIMD3<Float>] = vertices1.reversed().map { SIMD3<Float>($0.x, $0.y, $0.z - 0.0005 / 0.025) } // right in back side, top to bottom
+                let vertices: [SIMD3<Float>] = (vertices1 + vertices2 + vertices3 + vertices4)
+                    .map { (v: SIMD3<Float>) -> SIMD3<Float> in v * 0.025 } // scale
+                    .map { SIMD3<Float>($0.x, $0.y + 0.01, $0.z) } // traslate
                 secondMeshDescriptor.positions = .init(vertices)
-                secondMeshDescriptor.primitives = .polygons([UInt8(vertices.count)], Array(0..<(UInt32(vertices.count))))
+                let polygonVerticesCounts: [UInt8] = [
+                    UInt8(vertices1.count + vertices2.count),
+                    UInt8(vertices3.count + vertices4.count),
+                    UInt8(vertices4.count + vertices1.count),
+                    UInt8(vertices2.count + vertices3.count),
+                ]
+                let verticesIndices1: [UInt32] = (0..<vertices1.count).map {UInt32($0)}
+                let verticesIndices2: [UInt32] = (0..<vertices2.count).map {UInt32(vertices1.count + $0)}
+                let verticesIndices3: [UInt32] = (0..<vertices3.count).map {UInt32(vertices1.count + vertices2.count + $0)}
+                let verticesIndices4: [UInt32] = (0..<vertices4.count).map {UInt32(vertices1.count + vertices2.count + vertices3.count + $0)}
+                let polygonVerticesIndices1: [UInt32] = verticesIndices1 + verticesIndices2
+                let polygonVerticesIndices2: [UInt32] = verticesIndices3 + verticesIndices4
+                let polygonVerticesIndices3: [UInt32] = [UInt32](verticesIndices4.reversed()) + [UInt32](verticesIndices1.reversed())
+                let polygonVerticesIndices4: [UInt32] = [UInt32](verticesIndices2.reversed()) + [UInt32](verticesIndices3.reversed())
+                secondMeshDescriptor.primitives = .polygons(polygonVerticesCounts, [
+                    polygonVerticesIndices1,
+                    polygonVerticesIndices2,
+                    polygonVerticesIndices3,
+                    polygonVerticesIndices4,
+                ].flatMap {$0})
 
                 let e = try! await ModelEntity(mesh: .init(from: [secondMeshDescriptor]), materials: [handMaterial])
                 e.name = "SecondHand"
