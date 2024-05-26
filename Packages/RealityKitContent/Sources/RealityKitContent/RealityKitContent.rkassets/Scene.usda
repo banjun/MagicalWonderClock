@@ -193,9 +193,12 @@ def Xform "Root"
 
             def RealityKitAudioFile "tick_m4a"
             {
-                uniform token calibrationMode = "none"
+                uniform float absoluteCalibration = 8.507141
+                uniform token calibrationMode = "absolute"
                 uniform asset file = @tick.m4a@
                 uniform token normalization = "none"
+                uniform float relativeCalibration = -49.145786
+                uniform bool shouldLoop = 0
                 uniform bool shouldRandomizeStartTime = 0
             }
         }
