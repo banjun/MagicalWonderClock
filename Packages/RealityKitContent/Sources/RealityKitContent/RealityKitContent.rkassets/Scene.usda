@@ -5,9 +5,11 @@
     upAxis = "Y"
 )
 
+reorder rootPrims = ["Root", "tick_m4a"]
+
 def Xform "Root"
 {
-    reorder nameChildren = ["Acryl", "Material", "Board", "Support"]
+    reorder nameChildren = ["Acryl", "tick_m4a", "Board", "Support"]
     rel material:binding = None (
         bindMaterialAs = "weakerThanDescendants"
     )
@@ -168,6 +170,7 @@ def Xform "Root"
             }
         )
         {
+            reorder nameChildren = ["tick_m4a", "DefaultMaterial"]
             rel material:binding = </Root/Board/Clock/DefaultMaterial>
             double size = 0.1
             quatf xformOp:orient = (1, 1.8409318e-7, 0, 0)
@@ -186,6 +189,14 @@ def Xform "Root"
                     float inputs:roughness = 0.75
                     token outputs:surface
                 }
+            }
+
+            def RealityKitAudioFile "tick_m4a"
+            {
+                uniform token calibrationMode = "none"
+                uniform asset file = @tick.m4a@
+                uniform token normalization = "none"
+                uniform bool shouldRandomizeStartTime = 0
             }
         }
 

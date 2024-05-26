@@ -14,7 +14,7 @@ struct VolumetricView: View {
             RealityView {
                 $0.add(ModelEntity(mesh: .generateBox(size: physicalMetrics.convert(.init(minVolumetricLength), to: .meters) - 0.07), materials: [UnlitMaterial(color: .clear)]))
             }
-            AcrylClock(input: input, startSpinAnimationOnLoad: .once, isWindowHandleVisible: $isWindowHandleVisible)
+            AcrylClock(input: input, playsSoundEffect: true, startSpinAnimationOnLoad: .once, isWindowHandleVisible: $isWindowHandleVisible)
                 .frame(width: physicalMetrics.convert(15, from: .centimeters),
                        height: physicalMetrics.convert(10, from: .centimeters))
                 .frame(depth: physicalMetrics.convert(7, from: .centimeters))

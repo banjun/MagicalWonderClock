@@ -22,13 +22,15 @@ struct AcrylClock: View {
     @State private var sceneFile: SceneFile?
     private let tickTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var secondAngle = Angle2D.degrees(0)
+    private let playsSoundEffect: Bool
 
-    init(input: Input, startSpinAnimationOnLoad: SpinAnimation = .never, isWindowHandleVisible: Binding<Visibility> = .constant(Visibility.automatic), onTapGesture: ((Self) -> Void)? = nil) {
+    init(input: Input, playsSoundEffect: Bool = false, startSpinAnimationOnLoad: SpinAnimation = .never, isWindowHandleVisible: Binding<Visibility> = .constant(Visibility.automatic), onTapGesture: ((Self) -> Void)? = nil) {
         self.idol = input.idol
         self.image = input.image
         self.startSpinAnimationOnLoad = startSpinAnimationOnLoad
         self._isWindowHandleVisible = isWindowHandleVisible
         self.onTapGesture = onTapGesture
+        self.playsSoundEffect = playsSoundEffect
     }
 
     var body: some View {
@@ -87,6 +89,9 @@ struct AcrylClock: View {
         .onReceive(tickTimer) { _ in
             let now = Date()
             secondAngle = .degrees(Double(-6 * Calendar.autoupdatingCurrent.component(.second, from: now)))
+            if playsSoundEffect {
+                sceneFile?.playHandSoundEffect()
+            }
         }
     }
 

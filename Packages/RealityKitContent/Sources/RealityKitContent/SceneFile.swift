@@ -14,6 +14,7 @@ public final class SceneFile {
     public let backgroundEntity: ModelEntity
     public let clockEntity: ModelEntity
     public let secondHandEntity: ModelEntity
+    public let handSoundResource: AudioFileResource
 
     static private var scene: Entity?
 
@@ -81,6 +82,7 @@ public final class SceneFile {
                 return e
             }.value
         }
+        handSoundResource = try! await AudioFileResource(named: "/Root/Board/Clock/tick_m4a", from: "Scene.usda", in: realityKitContentBundle)
 
         Task { @MainActor in
             guard scene.findEntity(named: "ClockAnchor") == nil else { return }
@@ -113,5 +115,9 @@ public final class SceneFile {
         attachment.scale = .one // reset scales as it's manipulated as components are created in pure RCP
         scene.addChild(attachment)
         nameEntity.isEnabled = false
+    }
+
+    public func playHandSoundEffect() {
+        clockEntity.playAudio(handSoundResource)
     }
 }
