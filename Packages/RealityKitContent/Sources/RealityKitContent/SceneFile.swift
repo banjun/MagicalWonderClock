@@ -108,7 +108,7 @@ extension ModelEntity {
             return 0.10 * cos(a * (y - t)) * exp(-a * (y - t))
         }
         let points = [Float](stride(from: -1, through: 1, by: 0.02)) // should be less than 256 / 2, because a polygon can contain only 256 vertices
-        let vertices1: [SIMD3<Float>] = points.map { SIMD3<Float>(max(0.01, x(y: $0)), $0, 0) } // right side, bottom to top
+        let vertices1: [SIMD3<Float>] = points.map { SIMD3<Float>(max(0.03, x(y: $0)), $0, 0) } // right side, bottom to top
         let meshDescriptor = MeshDescriptor(name: "Hour", closedByFourSurfaces: vertices1, scale: 0.015, translateY: 0.015)
 
         return try! await ModelEntity(mesh: .init(from: [meshDescriptor]), materials: [handMaterial]) ※ {
@@ -124,7 +124,7 @@ extension ModelEntity {
             return 0.08 * cos(a * (y - t)) * exp(-a * (y - t))
         }
         let points = [Float](stride(from: -1, through: 1, by: 0.02)) // should be less than 256 / 2, because a polygon can contain only 256 vertices
-        let vertices1: [SIMD3<Float>] = points.map { SIMD3<Float>(max(0.01, x(y: $0)), $0, 0) } // right side, bottom to top
+        let vertices1: [SIMD3<Float>] = points.map { SIMD3<Float>(max(0.03, x(y: $0)), $0, 0) } // right side, bottom to top
         let meshDescriptor = MeshDescriptor(name: "Minute", closedByFourSurfaces: vertices1, scale: 0.018, translateY: 0.018)
 
         return try! await ModelEntity(mesh: .init(from: [meshDescriptor]), materials: [handMaterial]) ※ {
