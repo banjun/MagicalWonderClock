@@ -21,6 +21,8 @@ struct AcrylClock: View {
 
     @State private var sceneFile: SceneFile?
     private let tickTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var hourAngle = Angle2D.degrees(0)
+    @State private var minuteAngle = Angle2D.degrees(0)
     @State private var secondAngle = Angle2D.degrees(0)
     private let playsSoundEffect: Bool
 
@@ -71,6 +73,8 @@ struct AcrylClock: View {
             scene.transform.rotation = simd_quatf(.init(angle: yaw, axis: .y))
 
             guard let sceneFile else { return }
+            sceneFile.hourHandEntity.transform.rotation = .init(.init(angle: hourAngle, axis: .z))
+            sceneFile.minuteHandEntity.transform.rotation = .init(.init(angle: minuteAngle, axis: .z))
             sceneFile.secondHandEntity.transform.rotation = .init(.init(angle: secondAngle, axis: .z))
         } attachments: {
             Attachment(id: "Name") {
@@ -88,6 +92,8 @@ struct AcrylClock: View {
         }
         .onReceive(tickTimer) { _ in
             let now = Date()
+            hourAngle = .degrees(Double(-30 * Calendar.autoupdatingCurrent.component(.hour, from: now)))
+            minuteAngle = .degrees(Double(-6 * Calendar.autoupdatingCurrent.component(.minute, from: now)))
             secondAngle = .degrees(Double(-6 * Calendar.autoupdatingCurrent.component(.second, from: now)))
             if playsSoundEffect {
                 sceneFile?.playHandSoundEffect()
