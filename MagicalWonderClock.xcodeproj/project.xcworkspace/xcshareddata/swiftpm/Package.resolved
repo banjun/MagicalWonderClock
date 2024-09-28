@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/banjun/ikemen",
       "state" : {
-        "revision" : "feb71c7d86e22a3825f3e58fec37190f5f0c575d",
-        "version" : "0.8.0"
+        "revision" : "e675b68bd816b465e6eabfe8b85b8014d6018612",
+        "version" : "0.9.0"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/banjun/SwiftSparql",
       "state" : {
-        "revision" : "2bf3d4a020d4e323ea9a01d05c96da35a4128e04",
-        "version" : "0.13.0"
+        "revision" : "58c91d82126f26ffc437b8f33063a1753b83b2ec",
+        "version" : "0.14.0"
       }
     }
   ],

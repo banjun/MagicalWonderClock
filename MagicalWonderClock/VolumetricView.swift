@@ -12,7 +12,9 @@ struct VolumetricView: View {
         ZStack(alignment: .bottom) {
             // make the image front aligned within lower depth limit
             RealityView {
-                $0.add(ModelEntity(mesh: .generateBox(size: physicalMetrics.convert(.init(minVolumetricLength), to: .meters) - 0.07), materials: [UnlitMaterial(color: .clear)]))
+                let spacer = ModelEntity(mesh: .generateBox(size: physicalMetrics.convert(.init(minVolumetricLength), to: .meters) - 0.07), materials: [UnlitMaterial(color: .clear)])
+                spacer.isEnabled = false
+                $0.add(spacer)
             }
             AcrylClock(input: input, playsSoundEffect: true, startSpinAnimationOnLoad: .once, isWindowHandleVisible: $isWindowHandleVisible)
                 .frame(width: physicalMetrics.convert(15, from: .centimeters),
