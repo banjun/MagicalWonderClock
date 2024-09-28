@@ -5,7 +5,6 @@ struct VolumetricView: View {
     let minVolumetricLength: CGFloat
     let input: AcrylClock.Input
     @Environment(\.physicalMetrics) private var physicalMetrics
-    @Environment(\.openWindow) private var openWindow
     @State private var isWindowHandleVisible: Visibility = .visible
 
     var body: some View {
@@ -26,10 +25,9 @@ struct VolumetricView: View {
                     case .hidden: .visible
                     }
                 })
-            Button { openWindow(id: "Main") } label: { Image(systemName: "gearshape.2") }
-                .opacity(isWindowHandleVisible == .visible ? 1 : 0)
         }
         .persistentSystemOverlays(isWindowHandleVisible)
+        .volumeBaseplateVisibility(.hidden)
     }
 }
 
